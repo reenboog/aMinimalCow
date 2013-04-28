@@ -8,12 +8,12 @@
          ignoreCount = "0"
          continueAfterRunningActions = "No"
          filePath = "aMinimalCow/GameLayer.mm"
-         timestampString = "388823291.853803"
+         timestampString = "388831723.589494"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "221"
-         endingLineNumber = "221"
-         landmarkName = "-loadLevel:"
+         startingLineNumber = "222"
+         endingLineNumber = "222"
+         landmarkName = "-initWorld"
          landmarkType = "5">
       </FileBreakpoint>
       <FileBreakpoint
@@ -21,7 +21,7 @@
          ignoreCount = "0"
          continueAfterRunningActions = "No"
          filePath = "aMinimalCow/GameLayer.mm"
-         timestampString = "388824745.093727"
+         timestampString = "388831847.240456"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
          startingLineNumber = "336"
@@ -34,11 +34,11 @@
          ignoreCount = "0"
          continueAfterRunningActions = "No"
          filePath = "aMinimalCow/GameLayer.mm"
-         timestampString = "388823291.853803"
+         timestampString = "388831723.589494"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "275"
-         endingLineNumber = "275"
+         startingLineNumber = "276"
+         endingLineNumber = "276"
          landmarkName = "-loadLevel:"
          landmarkType = "5">
       </FileBreakpoint>
@@ -47,11 +47,11 @@
          ignoreCount = "0"
          continueAfterRunningActions = "No"
          filePath = "aMinimalCow/GameLayer.mm"
-         timestampString = "388823291.853803"
+         timestampString = "388831723.589494"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "279"
-         endingLineNumber = "279"
+         startingLineNumber = "280"
+         endingLineNumber = "280"
          landmarkName = "-loadLevel:"
          landmarkType = "5">
       </FileBreakpoint>
@@ -60,7 +60,7 @@
          ignoreCount = "0"
          continueAfterRunningActions = "No"
          filePath = "aMinimalCow/GameLayer.mm"
-         timestampString = "388823291.853803"
+         timestampString = "388831847.240456"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
          startingLineNumber = "282"
@@ -73,7 +73,7 @@
          ignoreCount = "0"
          continueAfterRunningActions = "No"
          filePath = "aMinimalCow/GameLayer.mm"
-         timestampString = "388823291.853803"
+         timestampString = "388831847.240456"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
          startingLineNumber = "287"
@@ -99,12 +99,12 @@
          ignoreCount = "0"
          continueAfterRunningActions = "No"
          filePath = "aMinimalCow/GameLayer.mm"
-         timestampString = "388824745.093727"
+         timestampString = "388831723.589494"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "391"
-         endingLineNumber = "391"
-         landmarkName = "-restartLevel"
+         startingLineNumber = "400"
+         endingLineNumber = "400"
+         landmarkName = "-isLevelValid:"
          landmarkType = "5">
       </FileBreakpoint>
       <FileBreakpoint
@@ -143,8 +143,8 @@
          endingColumnNumber = "9223372036854775807"
          startingLineNumber = "148"
          endingLineNumber = "148"
-         landmarkName = "@implementation GameLayer"
-         landmarkType = "3">
+         landmarkName = "-die"
+         landmarkType = "5">
       </FileBreakpoint>
       <FileBreakpoint
          shouldBeEnabled = "No"
@@ -164,11 +164,24 @@
          ignoreCount = "0"
          continueAfterRunningActions = "No"
          filePath = "aMinimalCow/GameLayer.mm"
-         timestampString = "388824745.093727"
+         timestampString = "388831723.589494"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "613"
-         endingLineNumber = "613"
+         startingLineNumber = "622"
+         endingLineNumber = "622"
+         landmarkName = "-checkCollisions"
+         landmarkType = "5">
+      </FileBreakpoint>
+      <FileBreakpoint
+         shouldBeEnabled = "No"
+         ignoreCount = "0"
+         continueAfterRunningActions = "No"
+         filePath = "aMinimalCow/GameLayer.mm"
+         timestampString = "388831723.589494"
+         startingColumnNumber = "9223372036854775807"
+         endingColumnNumber = "9223372036854775807"
+         startingLineNumber = "661"
+         endingLineNumber = "661"
          landmarkName = "-ccTouchesBegan:withEvent:"
          landmarkType = "5">
       </FileBreakpoint>
@@ -177,12 +190,12 @@
          ignoreCount = "0"
          continueAfterRunningActions = "No"
          filePath = "aMinimalCow/GameLayer.mm"
-         timestampString = "388824745.093727"
+         timestampString = "388831723.589494"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "652"
-         endingLineNumber = "652"
-         landmarkName = "-ccTouchesMoved:withEvent:"
+         startingLineNumber = "616"
+         endingLineNumber = "616"
+         landmarkName = "-checkCollisions"
          landmarkType = "5">
       </FileBreakpoint>
       <FileBreakpoint
@@ -190,11 +203,11 @@
          ignoreCount = "0"
          continueAfterRunningActions = "No"
          filePath = "aMinimalCow/GameLayer.mm"
-         timestampString = "388824745.093727"
+         timestampString = "388831723.589494"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "607"
-         endingLineNumber = "607"
+         startingLineNumber = "655"
+         endingLineNumber = "655"
          landmarkName = "-ccTouchesBegan:withEvent:"
          landmarkType = "5">
       </FileBreakpoint>
@@ -203,25 +216,12 @@
          ignoreCount = "0"
          continueAfterRunningActions = "No"
          filePath = "aMinimalCow/GameLayer.mm"
-         timestampString = "388824745.093727"
+         timestampString = "388831723.589494"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "646"
-         endingLineNumber = "646"
-         landmarkName = "-ccTouchesMoved:withEvent:"
-         landmarkType = "5">
-      </FileBreakpoint>
-      <FileBreakpoint
-         shouldBeEnabled = "No"
-         ignoreCount = "0"
-         continueAfterRunningActions = "No"
-         filePath = "aMinimalCow/GameLayer.mm"
-         timestampString = "388824745.093727"
-         startingColumnNumber = "9223372036854775807"
-         endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "610"
-         endingLineNumber = "610"
-         landmarkName = "-ccTouchesBegan:withEvent:"
+         startingLineNumber = "619"
+         endingLineNumber = "619"
+         landmarkName = "-checkCollisions"
          landmarkType = "5">
       </FileBreakpoint>
       <FileBreakpoint
@@ -261,6 +261,71 @@
          startingLineNumber = "37"
          endingLineNumber = "37"
          landmarkName = "-loadWithData:gameDelegate:"
+         landmarkType = "5">
+      </FileBreakpoint>
+      <FileBreakpoint
+         shouldBeEnabled = "No"
+         ignoreCount = "0"
+         continueAfterRunningActions = "No"
+         filePath = "aMinimalCow/GameLayer.mm"
+         timestampString = "388831847.240456"
+         startingColumnNumber = "9223372036854775807"
+         endingColumnNumber = "9223372036854775807"
+         startingLineNumber = "284"
+         endingLineNumber = "284"
+         landmarkName = "-loadLevel:"
+         landmarkType = "5">
+      </FileBreakpoint>
+      <FileBreakpoint
+         shouldBeEnabled = "No"
+         ignoreCount = "0"
+         continueAfterRunningActions = "No"
+         filePath = "aMinimalCow/GameLayer.mm"
+         timestampString = "388831723.589494"
+         startingColumnNumber = "9223372036854775807"
+         endingColumnNumber = "9223372036854775807"
+         startingLineNumber = "175"
+         endingLineNumber = "175"
+         landmarkName = "-initCow"
+         landmarkType = "5">
+      </FileBreakpoint>
+      <FileBreakpoint
+         shouldBeEnabled = "No"
+         ignoreCount = "0"
+         continueAfterRunningActions = "No"
+         filePath = "aMinimalCow/GameLayer.mm"
+         timestampString = "388831847.240456"
+         startingColumnNumber = "9223372036854775807"
+         endingColumnNumber = "9223372036854775807"
+         startingLineNumber = "375"
+         endingLineNumber = "375"
+         landmarkName = "-loadLevel:"
+         landmarkType = "5">
+      </FileBreakpoint>
+      <FileBreakpoint
+         shouldBeEnabled = "No"
+         ignoreCount = "0"
+         continueAfterRunningActions = "No"
+         filePath = "aMinimalCow/Cow.mm"
+         timestampString = "388831755.054544"
+         startingColumnNumber = "9223372036854775807"
+         endingColumnNumber = "9223372036854775807"
+         startingLineNumber = "21"
+         endingLineNumber = "21"
+         landmarkName = "-initWithGameDelegate:andPos:"
+         landmarkType = "5">
+      </FileBreakpoint>
+      <FileBreakpoint
+         shouldBeEnabled = "No"
+         ignoreCount = "0"
+         continueAfterRunningActions = "No"
+         filePath = "aMinimalCow/Cow.mm"
+         timestampString = "388831770.358978"
+         startingColumnNumber = "9223372036854775807"
+         endingColumnNumber = "9223372036854775807"
+         startingLineNumber = "22"
+         endingLineNumber = "22"
+         landmarkName = "-initWithGameDelegate:andPos:"
          landmarkType = "5">
       </FileBreakpoint>
    </FileBreakpoints>

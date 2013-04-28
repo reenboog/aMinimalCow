@@ -11,16 +11,16 @@
 
 @implementation Cow
 
-+ (Cow *) cowWithGameDelegate: (GameLayer *) gameDelegate {
-    return [[[self alloc] initWithGameDelegate: gameDelegate] autorelease];
++ (Cow *) cowWithGameDelegate: (GameLayer *) gameDelegate andPos: (CGPoint) pos {
+    return [[[self alloc] initWithGameDelegate: gameDelegate andPos: pos] autorelease];
 }
 
-- (Cow *) initWithGameDelegate: (GameLayer *) gameDelegate {
+- (Cow *) initWithGameDelegate: (GameLayer *) gameDelegate andPos: (CGPoint) pos {
     if((self = [super init])) {
         _spr = [CCSprite spriteWithFile: @"cow.png"];
         
+        self.position = pos;
         [self addChild: _spr];
-        self.position = kCowInitialPos;
         
         b2World *world = gameDelegate.world;
         
@@ -61,6 +61,10 @@
 
 - (void) turn {
     self.scaleX = -self.scaleX;
+}
+
+- (void) onGravitySwapped {
+    self.scaleY = -self.scaleY;
 }
 
 @end

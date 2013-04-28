@@ -14,9 +14,10 @@
     CCSprite *_spr;
 }
 
-+ (Cow *) cowWithGameDelegate: (GameLayer *) gameDelegate;
-- (Cow *) initWithGameDelegate: (GameLayer *) gameDelegate;
++ (Cow *) cowWithGameDelegate: (GameLayer *) gameDelegate andPos: (CGPoint) pos;
+- (Cow *) initWithGameDelegate: (GameLayer *) gameDelegate andPos: (CGPoint) pos;
 
 - (void) turn;
+- (void) onGravitySwapped;
 
 @end

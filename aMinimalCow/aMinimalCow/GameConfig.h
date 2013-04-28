@@ -43,7 +43,8 @@ typedef enum {
     GOT_Finish,
     GOT_Star,
     GOT_Turn,
-    GOT_Spring
+    GOT_Spring,
+    GOT_Gravity
 } GameObjectType;
 
 @class GameObject;

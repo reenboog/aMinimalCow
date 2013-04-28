@@ -21,6 +21,7 @@
 #import "Star.h"
 #import "Turn.h"
 #import "Spring.h"
+#import "GravitySwapper.h"
 
 @interface GameLayer ()
 
@@ -37,6 +38,7 @@
 - (Star *) loadStarFromData: (NSDictionary *) data;
 - (Turn *) loadTurnFromData: (NSDictionary *) data;
 - (Spring *) loadSpringFromData: (NSDictionary *) data;
+- (Spring *) loadGravitySwapperFromData: (NSDictionary *) data;
 //- (Monster *) loadMonsterFromData: (NSDictionary *) data;
 //- (Star *) loadStarFromData: (NSDictionary *) data;
 //- (Wall *) loadWallFromData: (NSDictionary *) data;
@@ -47,6 +49,7 @@
 - (void) die;
 - (void) run;
 - (void) turn;
+- (void) swapGravity;
 - (void) onLevelCompleted;
 - (void) destroyObject: (GameObject *) obj;
 
@@ -159,8 +162,18 @@
     [_cow turn];
 }
 
+- (void) swapGravity {
+    b2Vec2 gravity = _world->GetGravity();
+    gravity *= -1;
+    
+    _world->SetGravity(gravity);
+    
+    [_cow onGravitySwapped];
+}
+
 - (void) initCow {
-    _cow = [Cow cowWithGameDelegate: self];
+    _cow = [Cow cowWithGameDelegate: self andPos: _initialCowPos];
+    
     _cowBody = (b2Body *)_cow.userData;
     
     [self addChild: _cow z: zCow];
@@ -266,9 +279,8 @@
     [_hud clear];
     
     [self initWorld];
-    [self initCow];
     
-    CCTMXTiledMap *map = [CCTMXTiledMap tiledMapWithTMXFile: [NSString stringWithFormat: @"lv%i.tmx", levelIndex]];
+    CCTMXTiledMap *map = [CCTMXTiledMap tiledMapWithTMXFile: [NSString stringWithFormat: @"level%i.tmx", levelIndex]];
     [self addChild: map z: zTMX];
     
     CCTMXLayer *tiles = [map layerNamed: @"tiles"];
@@ -323,6 +335,12 @@
                                                   [NSNumber numberWithInt: pos.y], @"y", nil];
                             
                             obj = [self loadTurnFromData: data];
+                        } else if([type isEqualToString: @"gravity"]) {
+                            NSDictionary *data = [NSDictionary dictionaryWithObjectsAndKeys:
+                                                  [NSNumber numberWithInt: pos.x], @"x",
+                                                  [NSNumber numberWithInt: pos.y], @"y", nil];
+                            
+                            obj = [self loadGravitySwapperFromData: data];
                         } else {
                             CCLOG(@"unknown type: %@", type);
                             
@@ -352,8 +370,16 @@
             obj = [self loadStarFromData: objData];
         } else if([type isEqualToString: @"spring"]) {
             obj = [self loadSpringFromData: objData];
-        } else {
-            CCLOG(@"unknown obj type: %@", type);
+        } else if([type isEqualToString: @"start"]) {
+            int x = [[objData objectForKey: @"x"] intValue];
+            int y = [[objData objectForKey: @"y"] intValue];
+            
+            _initialCowPos = ccp(x, y);
+            _cowForce = kCowInitialForce;
+            
+            if([objData objectForKey: @"isForceNegative"]) {
+                _cowForce *= -1;
+            }
             continue;
         }
         
@@ -361,11 +387,12 @@
         [self addChild: obj z: objZ];
     }
     
+    [self initCow];
     [self run];
 }
 
 - (BOOL) isLevelValid: (int) levelIndex {
-    NSString *fileName = [NSString stringWithFormat: @"lv%i.tmx", levelIndex];
+    NSString *fileName = [NSString stringWithFormat: @"level%i.tmx", levelIndex];
     
     NSURL *levelUrl =  [NSURL fileURLWithPath:
                         [[CCFileUtils sharedFileUtils] fullPathFromRelativePath: fileName]];
@@ -452,6 +479,12 @@
 
 - (Spring *) loadSpringFromData: (NSDictionary *) data {
     Spring *obj = [Spring objectWithData: data gameDelegate: self];
+    
+    return obj;
+}
+
+- (GravitySwapper *) loadGravitySwapperFromData: (NSDictionary *) data {
+    GravitySwapper *obj = [GravitySwapper objectWithData: data gameDelegate: self];
     
     return obj;
 }
@@ -574,6 +607,9 @@
                     } else if(obj.type == GOT_Turn && !((Turn *)obj).turned) {
                         [((Turn *)obj) apply];
                         [self turn];
+                    } else if(obj.type == GOT_Gravity && !((GravitySwapper *)obj).turned) {
+                        [((GravitySwapper *)obj) apply];
+                        [self swapGravity];
                     } else if(obj.type == GOT_Spring) {
                         _cowBody->ApplyLinearImpulse(b2Vec2(0, 0.5), _cowBody->GetWorldCenter());
                     }

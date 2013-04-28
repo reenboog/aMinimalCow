@@ -31,6 +31,7 @@ class ContactListener;
     Cow *_cow;
     
     b2Vec2 _cowForce;
+    CGPoint _initialCowPos;
 	
     ContactListener *_contactListener;
     

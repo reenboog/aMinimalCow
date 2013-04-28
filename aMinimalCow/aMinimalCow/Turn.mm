@@ -29,7 +29,7 @@
     
     b2BodyDef bodyDef;
     bodyDef.type = b2_staticBody;
-    bodyDef.position.Set(coco2ptm(x + kSpikeSize / 2.0), coco2ptm(y + kSpikeSize / 2.0));
+    bodyDef.position.Set(coco2ptm(x + 30), coco2ptm(y + kFinishSize / 2.0));
     bodyDef.linearDamping = 1.3;
     bodyDef.angularDamping = 1;
     bodyDef.userData = self;
@@ -39,7 +39,7 @@
     
     // Define another box shape for our dynamic body.
     b2PolygonShape dynamicBox;
-    dynamicBox.SetAsBox(coco2ptm(kFinishSize / 2.0), coco2ptm(kFinishSize / 2.0));
+    dynamicBox.SetAsBox(coco2ptm(15), coco2ptm(kFinishSize / 2.0));
     
     // Define the dynamic body fixture.
     b2FixtureDef fixtureDef;
