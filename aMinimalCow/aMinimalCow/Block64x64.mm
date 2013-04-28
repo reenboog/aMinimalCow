@@ -82,6 +82,8 @@
         _joint = world->CreateJoint(&pjd);
         
         //[self scheduleUpdate];
+    } else {
+        _spr.color = ccc3(100, 100, 100);
     }
 }
 
