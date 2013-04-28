@@ -33,7 +33,7 @@ using namespace std;
 
 #define kSmallBlockSize 64
 #define kSpikeSize 40
-#define kFinishSize 64
+#define kFinishSize 50
 #define kCowSize 90
 
 typedef enum {

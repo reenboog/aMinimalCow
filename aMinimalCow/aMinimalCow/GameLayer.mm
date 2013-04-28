@@ -244,6 +244,7 @@
         [self removeChild: node cleanup: YES];
     }
     
+    [self removeChildByTag: kTMXTag cleanup: YES];
     [_objects removeAllObjects];
     
     if(_contactListener)
@@ -281,7 +282,7 @@
     [self initWorld];
     
     CCTMXTiledMap *map = [CCTMXTiledMap tiledMapWithTMXFile: [NSString stringWithFormat: @"level%i.tmx", levelIndex]];
-    [self addChild: map z: zTMX];
+    [self addChild: map z: zTMX tag: kTMXTag];
     
     CCTMXLayer *tiles = [map layerNamed: @"tiles"];
     //tiles.visible = NO;
@@ -500,7 +501,7 @@
 	
         kmGLPushMatrix();
         
-        _world->DrawDebugData();
+        //_world->DrawDebugData();
         
         kmGLPopMatrix();
     }
