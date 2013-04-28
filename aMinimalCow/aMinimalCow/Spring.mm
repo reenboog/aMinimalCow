@@ -1,20 +1,27 @@
+//
+//  Spring.m
+//  aMinimalCow
+//
+//  Created by Alex Gievsky on 28.04.13.
+//  Copyright (c) 2013 spotGames. All rights reserved.
+//
 
-#import "Ground.h"
+#import "Spring.h"
 #import "GameLayer.h"
-#import "Box2D.h"
 
-@implementation Ground
+@implementation Spring
+
+@synthesize shaking = _shaking;
 
 - (void) loadWithData: (NSDictionary *) data gameDelegate: (GameLayer *) gameDelegate {
     b2World *world = gameDelegate.world;
     //_type = (GameObjectType)[[data objectForKey: @"type"] intValue];
-    _type = GOT_Ground;
+    _type = GOT_Spring;
     
-//    _spr = [CCSprite spriteWithFile: @"sparks.png"];
-//    _spr.position = ccp(0, 0);
-//    
-//    [self addChild: _spr];
-    //_spr.color = ColorForMonster(_color);
+    _spr = [CCSprite spriteWithFile: @"spring.png"];
+    _spr.position = ccp(0, 0);
+
+    [self addChild: _spr];
     
     int x = [[data objectForKey: @"x"] intValue];
     int y = [[data objectForKey: @"y"] intValue];
@@ -31,7 +38,7 @@
     
     // Define another box shape for our dynamic body.
     b2PolygonShape dynamicBox;
-    dynamicBox.SetAsBox(coco2ptm(32), coco2ptm(32));
+    dynamicBox.SetAsBox(coco2ptm(kFinishSize / 2.0), coco2ptm(kFinishSize / 2.0));
     
     // Define the dynamic body fixture.
     b2FixtureDef fixtureDef;
@@ -39,14 +46,11 @@
     fixtureDef.density = 1.0f;
     fixtureDef.friction = 1.3f;
     fixtureDef.restitution = 0.11;
-//    fixtureDef.isSensor = true;
+    fixtureDef.isSensor = true;
     
     //fixtureDef.filter.groupIndex = kBallGroupType;
     //    fixtureDef.filter.categoryBits = MaskBitForType(obj.objectType);
     //    fixtureDef.filter.maskBits = MaskBitForType(obj.objectType);
-    
-    fixtureDef.filter.categoryBits = 0x002;
-    fixtureDef.filter.maskBits = 0x001;
     
     body->CreateFixture(&fixtureDef);
 }

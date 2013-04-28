@@ -31,7 +31,13 @@
     
     // Define another box shape for our dynamic body.
     b2PolygonShape dynamicBox;
-    dynamicBox.SetAsBox(coco2ptm(kSpikeSize / 2.0), coco2ptm(kSpikeSize / 2.0));
+    
+    NSString *type = [data objectForKey: @"type"];
+    if(type && [type isEqualToString: @"uspike"]) {
+        dynamicBox.SetAsBox(coco2ptm(28), coco2ptm(15));
+    } else {
+        dynamicBox.SetAsBox(coco2ptm(kSpikeSize / 2.0), coco2ptm(30));
+    }
     
     // Define the dynamic body fixture.
     b2FixtureDef fixtureDef;

@@ -25,8 +25,12 @@ class ContactListener;
     
 	b2Body			*_groundBody;
     
+    CCSprite *_back;
+    
     b2Body *_cowBody;
     Cow *_cow;
+    
+    b2Vec2 _cowForce;
 	
     ContactListener *_contactListener;
     
@@ -36,6 +40,12 @@ class ContactListener;
     
     //gui stuff
     Hud *_hud;
+    
+    int _stars;
+    BOOL _gameOver;
+    
+    //joints
+    MouseJointMap mouseJoints;
 }
 
 // returns a CCScene that contains the HelloWorldLayer as the only child

@@ -17,4 +17,6 @@
 + (Cow *) cowWithGameDelegate: (GameLayer *) gameDelegate;
 - (Cow *) initWithGameDelegate: (GameLayer *) gameDelegate;
 
+- (void) turn;
+
 @end

@@ -57,6 +57,20 @@
         [menu alignItemsHorizontallyWithPadding: 15];
                 
         [self addChild: menu];
+        
+        _star = [CCSprite spriteWithFile: @"star.png"];
+        _star.scale = 0.6;
+        _star.position = ccp(20, 740);
+        
+        [self addChild: _star];
+        
+        _starsLabel = [CCLabelTTF labelWithString: @""
+                                         fontName: @"Arial"
+                                         fontSize: 20];
+        _starsLabel.anchorPoint = ccp(0, 0.5);
+        _starsLabel.position = ccp(40, 740);
+        
+        [self addChild: _starsLabel];
     }
     
     return self;
@@ -79,7 +93,11 @@
 #pragma mark - Logic
 
 - (void) clear {
-    
+    [self setStars: 0];
+}
+
+- (void) setStars: (int) stars {
+    _starsLabel.string = [NSString stringWithFormat: @"x %i", stars];
 }
 
 @end

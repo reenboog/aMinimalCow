@@ -6,6 +6,7 @@
 
 #import <vector>
 #import <list>
+#import <map>
 
 using namespace std;
 
@@ -28,15 +29,27 @@ using namespace std;
 
 #define kCowInitialPos ccp(80, 250)
 
-#define kSpikeSize 64
-#define kCowSize 70
+#define kCowInitialForce b2Vec2(3, 0)
+
+#define kSmallBlockSize 64
+#define kSpikeSize 40
+#define kFinishSize 64
+#define kCowSize 90
 
 typedef enum {
     GOT_Ground,
     GOT_Spike,
-    GOT_SmallBlock,
-    GOT_BigBlock,
-    GOT_GiantBlock
+    GOT_Block,
+    GOT_Finish,
+    GOT_Star,
+    GOT_Turn,
+    GOT_Spring
 } GameObjectType;
+
+@class GameObject;
+class b2MouseJoint;
+
+typedef map<UITouch *, b2MouseJoint *> MouseJointMap;
+typedef vector<GameObject *> GameObjectVector;
 
 #endif

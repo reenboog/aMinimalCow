@@ -35,15 +35,16 @@
         self.userData = body;
         
         // Define another box shape for our dynamic body.
-        b2PolygonShape dynamicBox;
-        dynamicBox.SetAsBox(coco2ptm(kCowSize / 2.0), coco2ptm(kCowSize / 2.0));
+        b2CircleShape dynamicBox;
+        dynamicBox.m_radius = coco2ptm(kCowSize / 2);
         
         // Define the dynamic body fixture.
         b2FixtureDef fixtureDef;
         fixtureDef.shape = &dynamicBox;
-        fixtureDef.density = 1.0f;
-        fixtureDef.friction = 1.3f;
+        fixtureDef.density = 0.10f;
+        fixtureDef.friction = 0.3f;
         fixtureDef.restitution = 0.11;
+        fixtureDef.filter.categoryBits = 0x001;
         //fixtureDef.isSensor = true;
         
         //fixtureDef.filter.groupIndex = kBallGroupType;
@@ -51,10 +52,15 @@
         //    fixtureDef.filter.maskBits = MaskBitForType(obj.objectType);
         
         body->CreateFixture(&fixtureDef);
+        self.tag = kCowTag;
 
     }
     
     return self;
+}
+
+- (void) turn {
+    self.scaleX = -self.scaleX;
 }
 
 @end

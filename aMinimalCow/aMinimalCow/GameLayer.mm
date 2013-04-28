@@ -15,6 +15,12 @@
 #import "Spike.h"
 #import "Ground.h"
 #import "Cow.h"
+#import "Finish.h"
+#import "Block64x64.h"
+#import "SimpleAudioEngine.h"
+#import "Star.h"
+#import "Turn.h"
+#import "Spring.h"
 
 @interface GameLayer ()
 
@@ -26,6 +32,11 @@
 
 - (Spike *) loadSpikeFromData: (NSDictionary *) data;
 - (Ground *) loadGroundFromData: (NSDictionary *) data;
+- (Finish *) loadFinishFromData: (NSDictionary *) data;
+- (Block64x64 *) loadBlock64x64FromData: (NSDictionary *) data;
+- (Star *) loadStarFromData: (NSDictionary *) data;
+- (Turn *) loadTurnFromData: (NSDictionary *) data;
+- (Spring *) loadSpringFromData: (NSDictionary *) data;
 //- (Monster *) loadMonsterFromData: (NSDictionary *) data;
 //- (Star *) loadStarFromData: (NSDictionary *) data;
 //- (Wall *) loadWallFromData: (NSDictionary *) data;
@@ -33,7 +44,11 @@
 //- (Ice *) loadIceFromData: (NSDictionary *) data;
 //- (Mud *) loadMudFormData: (NSDictionary *) data;
 
+- (void) die;
+- (void) run;
+- (void) turn;
 - (void) onLevelCompleted;
+- (void) destroyObject: (GameObject *) obj;
 
 @end
 
@@ -92,13 +107,56 @@
 	if((self = [super init])) {
         self.isTouchEnabled = YES;
         
+        _back = [CCSprite spriteWithFile: @"bg.png"];
+        _back.position = ccp(512, 384);
+        
+        [self addChild: _back z: zTMX - 1];
+        
         _objects = [[NSMutableArray alloc] init];
         
         [self scheduleUpdate];
-		
+        
+        [[SimpleAudioEngine sharedEngine] playBackgroundMusic: @"bgMusic.mp3"];
 	}
 	
 	return self;
+}
+
+- (void) die {
+    _gameOver = YES;
+    
+    _world->DestroyBody(_cowBody);
+    _cowBody = NULL;
+    
+    __block GameLayer *bself = self;
+    
+    [[SimpleAudioEngine sharedEngine] playEffect: @"die.wav"];
+
+    [_cow runAction:
+                    [CCSequence actions:
+                                    [CCSpawn actions:
+                                                [CCJumpTo actionWithDuration: 0.4
+                                                                    position: ccpAdd(_cow.position, ccp(100, -400))
+                                                                      height: 250
+                                                                       jumps: 1],
+                                                [CCRotateTo actionWithDuration: 0.3 angle: 180], nil],
+                                    [CCCallBlock actionWithBlock:^{
+                                        [bself restartLevel];
+                                    }], nil]
+    ];
+}
+
+- (void) run {
+    _gameOver = NO;
+    _cowForce = kCowInitialForce;
+}
+
+- (void) turn {
+    _cowForce *= -1;
+    
+    //_cowBody->SetLinearVelocity(b2Vec2(0, 0));
+    
+    [_cow turn];
 }
 
 - (void) initCow {
@@ -199,13 +257,18 @@
         _cowBody = nil;
     }
     
+    mouseJoints.clear();
+    
+    _stars = 0;
+    _gameOver = YES;
+    
     //reset gui
     [_hud clear];
     
     [self initWorld];
     [self initCow];
     
-    CCTMXTiledMap *map = [CCTMXTiledMap tiledMapWithTMXFile: [NSString stringWithFormat: @"level%i.tmx", levelIndex]];
+    CCTMXTiledMap *map = [CCTMXTiledMap tiledMapWithTMXFile: [NSString stringWithFormat: @"lv%i.tmx", levelIndex]];
     [self addChild: map z: zTMX];
     
     CCTMXLayer *tiles = [map layerNamed: @"tiles"];
@@ -229,12 +292,37 @@
                                                   [NSNumber numberWithInt: pos.y], @"y", nil];
                             
                             obj = [self loadSpikeFromData: data];
+                        } else if ([type isEqualToString: @"uspike"]) {
+                            NSDictionary *data = [NSDictionary dictionaryWithObjectsAndKeys:
+                                                  [NSNumber numberWithInt: pos.x], @"x",
+                                                  [NSNumber numberWithInt: pos.y], @"y",
+                                                  @"uspike", @"type", nil];
+                            
+                            obj = [self loadSpikeFromData: data];
                         } else if([type isEqualToString: @"ground"]) {
                             NSDictionary *data = [NSDictionary dictionaryWithObjectsAndKeys:
                                                   [NSNumber numberWithInt: pos.x], @"x",
                                                   [NSNumber numberWithInt: pos.y], @"y", nil];
                             
                             obj = [self loadGroundFromData: data];
+                        } else if ([type isEqualToString: @"finish"]) {
+                            NSDictionary *data = [NSDictionary dictionaryWithObjectsAndKeys:
+                                                  [NSNumber numberWithInt: pos.x], @"x",
+                                                  [NSNumber numberWithInt: pos.y], @"y", nil];
+                            
+                            obj = [self loadFinishFromData: data];
+                        } else if([type isEqualToString: @"block64x64"]) {
+                            NSDictionary *data = [NSDictionary dictionaryWithObjectsAndKeys:
+                                                  [NSNumber numberWithInt: pos.x], @"x",
+                                                  [NSNumber numberWithInt: pos.y], @"y", nil];
+                            
+                            obj = [self loadBlock64x64FromData: data];
+                        } else if([type isEqualToString: @"turn"]) {
+                            NSDictionary *data = [NSDictionary dictionaryWithObjectsAndKeys:
+                                                  [NSNumber numberWithInt: pos.x], @"x",
+                                                  [NSNumber numberWithInt: pos.y], @"y", nil];
+                            
+                            obj = [self loadTurnFromData: data];
                         } else {
                             CCLOG(@"unknown type: %@", type);
                             
@@ -249,10 +337,35 @@
         }
     }
     
+    CCTMXObjectGroup *objectsGroup = [map objectGroupNamed: @"blocks"];
+    NSArray *objects = objectsGroup.objects;
+    
+    for(id objData in objects) {
+        NSString *type = [objData objectForKey: @"type"];
+        
+        GameObject *obj = nil;
+        int objZ = 0;
+        
+        if([type isEqualToString: @"64x64"]) {
+            obj = [self loadBlock64x64FromData: objData];
+        } else if([type isEqualToString: @"star"]) {
+            obj = [self loadStarFromData: objData];
+        } else if([type isEqualToString: @"spring"]) {
+            obj = [self loadSpringFromData: objData];
+        } else {
+            CCLOG(@"unknown obj type: %@", type);
+            continue;
+        }
+        
+        [_objects addObject: obj];
+        [self addChild: obj z: objZ];
+    }
+    
+    [self run];
 }
 
 - (BOOL) isLevelValid: (int) levelIndex {
-    NSString *fileName = [NSString stringWithFormat: @"level%i.tmx", levelIndex];
+    NSString *fileName = [NSString stringWithFormat: @"lv%i.tmx", levelIndex];
     
     NSURL *levelUrl =  [NSURL fileURLWithPath:
                         [[CCFileUtils sharedFileUtils] fullPathFromRelativePath: fileName]];
@@ -279,7 +392,26 @@
 }
 
 - (void) onLevelCompleted {
-    [self loadNextLevel];
+    
+    CCLOG(@"level completed");
+    //[self loadNextLevel];
+    
+    [self restartLevel];
+}
+
+- (void) destroyObject: (GameObject *) obj {
+    b2Body *body = (b2Body *)obj.userData;
+    
+    _world->DestroyBody(body);
+    
+    [obj runAction:
+                [CCSequence actions:
+                                    [CCScaleTo actionWithDuration: 0.2 scale: 0.01], 
+                                    [CCCallBlock actionWithBlock:^{
+                                        //can something go wrong in here with retain count?
+                                        [obj removeFromParentAndCleanup: NO];
+                                        [_objects removeObject: obj];
+                                    }], nil]];
 }
 
 - (Spike *) loadSpikeFromData: (NSDictionary *) data {
@@ -290,6 +422,36 @@
 
 - (Ground *) loadGroundFromData: (NSDictionary *) data {
     Ground *obj = [Ground objectWithData: data gameDelegate: self];
+    
+    return obj;
+}
+
+- (Finish *) loadFinishFromData: (NSDictionary *) data {
+    Finish *obj = [Finish objectWithData: data gameDelegate: self];
+    
+    return obj;
+}
+
+- (Block64x64 *) loadBlock64x64FromData: (NSDictionary *) data {
+    Block64x64 *obj = [Block64x64 objectWithData: data gameDelegate: self];
+    
+    return obj;
+}
+
+- (Star *) loadStarFromData: (NSDictionary *) data {
+    Star *obj = [Star objectWithData: data gameDelegate: self];
+    
+    return obj;
+}
+
+- (Turn *) loadTurnFromData: (NSDictionary *) data {
+    Turn *obj = [Turn objectWithData: data gameDelegate: self];
+    
+    return obj;
+}
+
+- (Spring *) loadSpringFromData: (NSDictionary *) data {
+    Spring *obj = [Spring objectWithData: data gameDelegate: self];
     
     return obj;
 }
@@ -313,7 +475,7 @@
 
 - (void) update: (ccTime) dt {
     
-    if(!_world) {
+    if(!_world || _gameOver) {
         return;
     }
     
@@ -335,6 +497,11 @@
     ///////////////////////////////////////////////////////////////////////////////////////////////
     
     ///////////////////////////////////////////////////////////////////////////////////////////////
+    
+    b2Vec2 force = _cowForce;
+    force *= (dt * 84);
+    
+    _cowBody->ApplyForceToCenter(force);
     
     while((frameTime > 0.0f) && (stepsPerformed < MAXIMUM_NUMBER_OF_STEPS))
     {
@@ -366,7 +533,10 @@
         
         CCNode *myActor = (CCNode *)b->GetUserData();
         myActor.position = CGPointMake(ptm2coco(b->GetPosition().x), ptm2coco(b->GetPosition().y));
-        myActor.rotation = -1 * CC_RADIANS_TO_DEGREES(b->GetAngle());
+        
+        if(myActor.tag != kCowTag) {
+            myActor.rotation = -1 * CC_RADIANS_TO_DEGREES(b->GetAngle());
+        }
 	}
 }
 
@@ -374,7 +544,7 @@
     ContactsVector contacts = _contactListener->GetContacts();
     
     ContactsVector::iterator itEnd = contacts.end();
-    
+    GameObjectVector objectsToRemove;
     
     for(ContactsVector::iterator it = contacts.begin(); it != itEnd; ++it) {
         b2Fixture *fixtureA = it->fixtureA;
@@ -384,14 +554,139 @@
         b2Body *bodyB = fixtureB->GetBody();
         
         for(GameObject *obj in _objects) {
-//            for(Bullet *bullet in _bullets) {
-//                b2Body *objBody = (b2Body *)obj.userData;
-//                b2Body *bulletBody = (b2Body *)bullet.userData;
-//                
-//                if((objBody == bodyA && bulletBody == bodyB) || (objBody == bodyB && objBody == bodyA)) {
-//                }
-//                }
+            b2Body *objBody = (b2Body *)obj.userData;
+//
+                if((objBody == bodyA && _cowBody == bodyB) || (objBody == bodyB && _cowBody == bodyA)) {
+                    if(obj.type == GOT_Finish) {
+                        [self onLevelCompleted];
+                        return;
+                    } else if(obj.type == GOT_Spike){
+                        [self die];
+                        return;
+                    } else if(obj.type == GOT_Star) {
+                        objectsToRemove.push_back(obj);
+                        
+                        _stars++;
+                        _hud.stars = _stars;
+
+                        [[SimpleAudioEngine sharedEngine] playEffect: @"star.wav"];
+                        break;
+                    } else if(obj.type == GOT_Turn && !((Turn *)obj).turned) {
+                        [((Turn *)obj) apply];
+                        [self turn];
+                    } else if(obj.type == GOT_Spring) {
+                        _cowBody->ApplyLinearImpulse(b2Vec2(0, 0.5), _cowBody->GetWorldCenter());
+                    }
+                }
+        }
+    }
+    
+    for(GameObjectVector::iterator it = objectsToRemove.begin(); it != objectsToRemove.end(); ++it) {
+        //stars only
+        [self destroyObject: *it];
+//        _coins++;
+//        _hud.coins = _coins;
+    }
+}
+
+#pragma mark - Touches
+
+- (void)ccTouchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
+    if(!_world || _gameOver) {
+        return;
+    }
+    
+    for( UITouch *touch in touches ) {
+
+		CGPoint location = [touch locationInView: [touch view]];
+		location = [[CCDirector sharedDirector] convertToGL: location];
+        location = [self convertToNodeSpace: location];
+        
+        b2Vec2 locationWorld = coco_vec2ptm(location);
+        
+        for(b2Body *body = _world->GetBodyList(); body; body = body->GetNext())
+        {
+            //assume, that each cube has only one shape
+            b2Fixture *shape = body->GetFixtureList();
+            if(body != _cowBody && body->GetType() == b2_dynamicBody && shape->TestPoint(locationWorld))
+            {
+                GameObject *actor = (GameObject *)body->GetUserData();
+                if(actor && actor.type == GOT_Block) {
+                    MouseJointMap::iterator it = mouseJoints.find(touch);
+                    
+                    if(it == mouseJoints.end()) {
+                        b2MouseJointDef md;
+                        md.bodyA = _groundBody;
+                        md.bodyB = body;
+                        md.target = locationWorld;
+                        md.collideConnected = true;
+                        md.maxForce = 1000.0f * body->GetMass();
+                        
+                        b2MouseJoint *mouseJoint = (b2MouseJoint *)_world->CreateJoint(&md);
+                        body->SetAwake(true);
+                        
+                        mouseJoints.insert(make_pair<UITouch *, b2MouseJoint *>(touch, mouseJoint));
+                    }
+                }
+                
+                break;
+            }
+        }
+
+    }
+}
+
+- (void)ccTouchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
+    if(!_world || _gameOver) {
+        return;
+    }
+    
+    for( UITouch *touch in touches ) {
+        
+		CGPoint location = [touch locationInView: [touch view]];
+		location = [[CCDirector sharedDirector] convertToGL: location];
+        location = [self convertToNodeSpace: location];
+        
+        b2Vec2 locationWorld = coco_vec2ptm(location);
+        
+        MouseJointMap::iterator it = mouseJoints.find(touch);
+        if(it != mouseJoints.end()) {
+            b2MouseJoint *mouseJoint = it->second;
+            
+            if(mouseJoint) {
+                mouseJoint->SetTarget(locationWorld);
+            }
         }
     }
 }
+
+- (void)ccTouchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
+    if(!_world || _gameOver) {
+        return;
+    }
+    
+    for( UITouch *touch in touches ) {
+        
+		CGPoint location = [touch locationInView: [touch view]];
+		location = [[CCDirector sharedDirector] convertToGL: location];
+        location = [self convertToNodeSpace: location];
+        
+        //b2Vec2 locationWorld = coco_vec2ptm(location);
+        
+        MouseJointMap::iterator it = mouseJoints.find(touch);
+        if(it != mouseJoints.end()) {
+            b2MouseJoint *mouseJoint = it->second;
+            
+            if(mouseJoint) {
+                _world->DestroyJoint(mouseJoint);
+                mouseJoints.erase(it);
+            }
+        }
+    }
+}
+
+- (void)ccTouchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event {
+    
+}
+
 @end
