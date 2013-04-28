@@ -72,8 +72,8 @@
         }
         
         pjd.Initialize(gameDelegate.groundBody, body, body->GetWorldCenter(), worldAxis);
-        pjd.lowerTranslation = [[data objectForKey: @"lowerDistance"] intValue];
-        pjd.upperTranslation = [[data objectForKey: @"upperDistance"] intValue];
+        pjd.lowerTranslation = coco2ptm([[data objectForKey: @"lowerDistance"] intValue]);
+        pjd.upperTranslation = coco2ptm([[data objectForKey: @"upperDistance"] intValue]);
         pjd.enableLimit = true;
         pjd.maxMotorForce = 5.0;
         pjd.motorSpeed = [[data objectForKey: @"speed"] intValue];
